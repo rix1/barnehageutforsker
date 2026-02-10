@@ -1,6 +1,11 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Kindergarten } from "../db.ts";
-import { getStarredFromURL, updateStarredURL } from "../utils/starred.ts";
+import {
+  getSortFromURL,
+  getStarredFromURL,
+  updateSortURL,
+  updateStarredURL,
+} from "../utils/starred.ts";
 
 interface Props {
   data: Kindergarten[];
@@ -45,6 +50,9 @@ export default function KindergartenTable({ data }: Props) {
 
   useEffect(() => {
     setStarred(getStarredFromURL());
+    const sort = getSortFromURL("name", "asc");
+    setSortKey(sort.key as SortKey);
+    setSortDir(sort.dir);
   }, []);
 
   const toggleStar = (id: number) => {
@@ -68,12 +76,15 @@ export default function KindergartenTable({ data }: Props) {
   });
 
   const handleSort = (key: SortKey) => {
+    let newDir: SortDir;
     if (key === sortKey) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
+      newDir = sortDir === "asc" ? "desc" : "asc";
     } else {
-      setSortKey(key);
-      setSortDir(key === "starred" ? "desc" : "asc");
+      newDir = key === "starred" ? "desc" : "asc";
     }
+    setSortKey(key);
+    setSortDir(newDir);
+    updateSortURL(key, newDir, "name");
   };
 
   const sorted = [...filtered].sort((a, b) => {
