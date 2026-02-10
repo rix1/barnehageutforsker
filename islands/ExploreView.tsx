@@ -206,124 +206,11 @@ export default function ExploreView({ data }: Props) {
   ];
 
   return (
-    <div class="flex h-[calc(100vh-3.5rem)]">
+    <div class="flex flex-col md:flex-row h-[calc(100vh-3.5rem)]">
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-      {/* Left panel: list */}
-      <div class="w-[45vw] shrink-0 flex flex-col border-r border-gray-200 bg-white">
-        {/* Filters */}
-        <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50">
-          <select
-            value={filterType}
-            onChange={(e) =>
-              setFilterType((e.target as HTMLSelectElement).value)}
-            class="text-xs border border-gray-300 rounded px-2 py-1 bg-white text-oslo-navy"
-          >
-            <option value="">Alle typer</option>
-            <option value="Kommunal">Kommunal</option>
-            <option value="Privat">Privat</option>
-          </select>
-          <select
-            value={filterDistrict}
-            onChange={(e) =>
-              setFilterDistrict((e.target as HTMLSelectElement).value)}
-            class="text-xs border border-gray-300 rounded px-2 py-1 bg-white text-oslo-navy"
-          >
-            <option value="">Alle bydeler</option>
-            {districts.map((d) => (
-              <option key={d} value={d}>
-                {d.replace("Bydel ", "")}
-              </option>
-            ))}
-          </select>
-          <span class="text-xs text-gray-400 ml-auto">
-            {filtered.length} treff
-          </span>
-        </div>
-
-        {/* Table */}
-        <div class="overflow-y-auto flex-1">
-          <table class="w-full text-xs">
-            <thead class="sticky top-0 z-10">
-              <tr class="bg-oslo-navy text-white">
-                {cols.map((col) => (
-                  <th
-                    key={col.key}
-                    onClick={() => handleSort(col.key)}
-                    class={`px-2 py-2 font-medium cursor-pointer select-none hover:bg-oslo-navy-light whitespace-nowrap ${
-                      col.right ? "text-right" : "text-left"
-                    }`}
-                  >
-                    {col.label}
-                    <span class="text-oslo-yellow">{arrow(col.key)}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-              {sorted.map((k, i) => (
-                <tr
-                  key={k.id}
-                  onMouseEnter={() => setHoveredId(k.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => handleRowClick(k)}
-                  class={`cursor-pointer transition-colors ${
-                    selected?.id === k.id
-                      ? "bg-oslo-yellow-light ring-1 ring-inset ring-oslo-yellow"
-                      : starred.has(k.id)
-                      ? "bg-oslo-yellow-light/50 hover:bg-oslo-yellow-light"
-                      : i % 2 === 0
-                      ? "bg-white hover:bg-gray-50"
-                      : "bg-gray-50/50 hover:bg-gray-100/50"
-                  }`}
-                >
-                  <td class="px-2 py-1.5 text-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleStar(k.id);
-                      }}
-                      class={`text-sm leading-none ${
-                        starred.has(k.id)
-                          ? "text-oslo-yellow"
-                          : "text-gray-300 hover:text-oslo-yellow/60"
-                      }`}
-                    >
-                      {starred.has(k.id) ? "\u2605" : "\u2606"}
-                    </button>
-                  </td>
-                  <td class="px-2 py-1.5 font-medium text-oslo-navy truncate max-w-[180px]">
-                    {k.name}
-                  </td>
-                  <td class="px-2 py-1.5">
-                    <span
-                      class={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
-                        k.type === "Kommunal"
-                          ? "bg-oslo-navy text-white"
-                          : "bg-oslo-yellow text-oslo-navy"
-                      }`}
-                    >
-                      {k.type === "Kommunal" ? "K" : "P"}
-                    </span>
-                  </td>
-                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
-                    {k.num_children ?? "\u2013"}
-                  </td>
-                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
-                    {k.children_per_employee ?? "\u2013"}
-                  </td>
-                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
-                    {k.survey_overall_satisfaction ?? "\u2013"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Right panel: map */}
-      <div class="flex-1 relative">
+      {/* Map panel: top on mobile, right on desktop */}
+      <div class="h-[60vh] md:h-auto md:order-2 flex-1 relative">
         <div ref={mapRef} class="w-full h-full z-0" />
 
         {/* Legend */}
@@ -455,6 +342,120 @@ export default function ExploreView({ data }: Props) {
           </div>
         )}
       </div>
+
+      {/* Table panel: bottom on mobile, left on desktop */}
+      <div class="h-[40vh] md:h-auto md:order-1 md:w-[45vw] shrink-0 flex flex-col border-t md:border-t-0 md:border-r border-gray-200 bg-white">
+        {/* Filters */}
+        <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50">
+          <select
+            value={filterType}
+            onChange={(e) =>
+              setFilterType((e.target as HTMLSelectElement).value)}
+            class="text-xs border border-gray-300 rounded px-2 py-1 bg-white text-oslo-navy"
+          >
+            <option value="">Alle typer</option>
+            <option value="Kommunal">Kommunal</option>
+            <option value="Privat">Privat</option>
+          </select>
+          <select
+            value={filterDistrict}
+            onChange={(e) =>
+              setFilterDistrict((e.target as HTMLSelectElement).value)}
+            class="text-xs border border-gray-300 rounded px-2 py-1 bg-white text-oslo-navy"
+          >
+            <option value="">Alle bydeler</option>
+            {districts.map((d) => (
+              <option key={d} value={d}>
+                {d.replace("Bydel ", "")}
+              </option>
+            ))}
+          </select>
+          <span class="text-xs text-gray-400 ml-auto">
+            {filtered.length} treff
+          </span>
+        </div>
+
+        {/* Table */}
+        <div class="overflow-y-auto flex-1">
+          <table class="w-full text-xs">
+            <thead class="sticky top-0 z-10">
+              <tr class="bg-oslo-navy text-white">
+                {cols.map((col) => (
+                  <th
+                    key={col.key}
+                    onClick={() => handleSort(col.key)}
+                    class={`px-2 py-2 font-medium cursor-pointer select-none hover:bg-oslo-navy-light whitespace-nowrap ${
+                      col.right ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {col.label}
+                    <span class="text-oslo-yellow">{arrow(col.key)}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              {sorted.map((k, i) => (
+                <tr
+                  key={k.id}
+                  onMouseEnter={() => setHoveredId(k.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  onClick={() => handleRowClick(k)}
+                  class={`cursor-pointer transition-colors ${
+                    selected?.id === k.id
+                      ? "bg-oslo-yellow-light ring-1 ring-inset ring-oslo-yellow"
+                      : starred.has(k.id)
+                      ? "bg-oslo-yellow-light/50 hover:bg-oslo-yellow-light"
+                      : i % 2 === 0
+                      ? "bg-white hover:bg-gray-50"
+                      : "bg-gray-50/50 hover:bg-gray-100/50"
+                  }`}
+                >
+                  <td class="px-2 py-1.5 text-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleStar(k.id);
+                      }}
+                      class={`text-sm leading-none ${
+                        starred.has(k.id)
+                          ? "text-oslo-yellow"
+                          : "text-gray-300 hover:text-oslo-yellow/60"
+                      }`}
+                    >
+                      {starred.has(k.id) ? "\u2605" : "\u2606"}
+                    </button>
+                  </td>
+                  <td class="px-2 py-1.5 font-medium text-oslo-navy truncate max-w-[180px]">
+                    {k.name}
+                  </td>
+                  <td class="px-2 py-1.5">
+                    <span
+                      class={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                        k.type === "Kommunal"
+                          ? "bg-oslo-navy text-white"
+                          : "bg-oslo-yellow text-oslo-navy"
+                      }`}
+                    >
+                      {k.type === "Kommunal" ? "K" : "P"}
+                    </span>
+                  </td>
+                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
+                    {k.num_children ?? "\u2013"}
+                  </td>
+                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
+                    {k.children_per_employee ?? "\u2013"}
+                  </td>
+                  <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
+                    {k.survey_overall_satisfaction ?? "\u2013"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   );
 }
