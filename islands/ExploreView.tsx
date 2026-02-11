@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { Kindergarten } from "../db.ts";
+import { formatNextOpenDay } from "../utils/dates.ts";
 import {
   getSortFromURL,
   getStarredFromURL,
@@ -171,6 +172,12 @@ export default function ExploreView({ data }: Props) {
       const bs = starred.has(b.id) ? 1 : 0;
       return sortDir === "asc" ? as - bs : bs - as;
     }
+    if (sortKey === "next_open_day") {
+      const ad = a.next_open_day?.date ?? "9999";
+      const bd = b.next_open_day?.date ?? "9999";
+      const cmp = ad.localeCompare(bd);
+      return sortDir === "asc" ? cmp : -cmp;
+    }
     const av = a[sortKey as keyof Kindergarten];
     const bv = b[sortKey as keyof Kindergarten];
     if (av == null && bv == null) return 0;
@@ -203,6 +210,7 @@ export default function ExploreView({ data }: Props) {
     { key: "num_children", label: "Barn", right: true },
     { key: "children_per_employee", label: "B/A", right: true },
     { key: "survey_overall_satisfaction", label: "Score", right: true },
+    { key: "next_open_day", label: "Besøk" },
   ];
 
   return (
@@ -448,6 +456,15 @@ export default function ExploreView({ data }: Props) {
                   </td>
                   <td class="px-2 py-1.5 text-right tabular-nums text-gray-600">
                     {k.survey_overall_satisfaction ?? "\u2013"}
+                  </td>
+                  <td class="px-2 py-1.5 whitespace-nowrap">
+                    {k.next_open_day
+                      ? (
+                        <span class="text-oslo-green font-medium">
+                          {formatNextOpenDay(k.next_open_day)}
+                        </span>
+                      )
+                      : <span class="text-gray-300">\u2013</span>}
                   </td>
                 </tr>
               ))}

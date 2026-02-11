@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Kindergarten } from "../db.ts";
+import { formatNextOpenDay } from "../utils/dates.ts";
 import {
   getSortFromURL,
   getStarredFromURL,
@@ -39,6 +40,7 @@ const columns: { key: SortKey; label: string; class?: string }[] = [
   },
   { key: "opening_hours_from", label: "Åpner", class: "text-right" },
   { key: "opening_hours_to", label: "Stenger", class: "text-right" },
+  { key: "next_open_day", label: "Neste besøk" },
 ];
 
 export default function KindergartenTable({ data }: Props) {
@@ -92,6 +94,12 @@ export default function KindergartenTable({ data }: Props) {
       const as = starred.has(a.id) ? 1 : 0;
       const bs = starred.has(b.id) ? 1 : 0;
       return sortDir === "asc" ? as - bs : bs - as;
+    }
+    if (sortKey === "next_open_day") {
+      const ad = a.next_open_day?.date ?? "9999";
+      const bd = b.next_open_day?.date ?? "9999";
+      const cmp = ad.localeCompare(bd);
+      return sortDir === "asc" ? cmp : -cmp;
     }
     const av = a[sortKey as keyof Kindergarten];
     const bv = b[sortKey as keyof Kindergarten];
@@ -247,6 +255,21 @@ export default function KindergartenTable({ data }: Props) {
                 </td>
                 <td class="px-3 py-2 text-right tabular-nums text-gray-600">
                   {k.opening_hours_to ?? "\u2013"}
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap">
+                  {k.next_open_day
+                    ? (
+                      <span class="text-oslo-green font-medium text-xs">
+                        {formatNextOpenDay(k.next_open_day)}
+                      </span>
+                    )
+                    : k.open_days.length === 0
+                    ? <span class="text-gray-300">\u2013</span>
+                    : (
+                      <span class="text-gray-400 text-xs italic">
+                        Ingen flere
+                      </span>
+                    )}
                 </td>
               </tr>
             ))}

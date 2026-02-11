@@ -7,7 +7,7 @@
     "start": "deno serve -A _fresh/server.js",
     "update": "deno run -A -r jsr:@fresh/update .",
     "scrape": "deno run --allow-net --allow-read --allow-write --allow-env --allow-ffi scrape.ts",
-    "export": "sqlite3 barnehager.db -json 'SELECT * FROM kindergartens ORDER BY name' > data/kindergartens.json"
+    "export": "sqlite3 barnehager.db -json 'SELECT * FROM kindergartens ORDER BY name' > data/kindergartens.json && sqlite3 barnehager.db -json 'SELECT * FROM open_days ORDER BY kindergarten_id, date, time_from' > data/open_days.json"
   },
   "lint": {
     "rules": {
