@@ -458,13 +458,34 @@ export default function ExploreView({ data }: Props) {
                     {k.survey_overall_satisfaction ?? "\u2013"}
                   </td>
                   <td class="px-2 py-1.5 whitespace-nowrap">
-                    {k.next_open_day
-                      ? (
-                        <span class="text-oslo-green font-medium">
-                          {formatNextOpenDay(k.next_open_day)}
+                    {(() => {
+                      const fmt = formatNextOpenDay(k.next_open_day);
+                      if (!fmt) {
+                        return <span class="text-gray-300">&ndash;</span>;
+                      }
+                      if (fmt.isPast) {
+                        return (
+                          <span class="text-gray-400 text-xs">
+                            <span class="line-through">{fmt.label}</span>
+                            {fmt.relative && (
+                              <span class="block text-gray-300 text-[11px]">
+                                {fmt.relative}
+                              </span>
+                            )}
+                          </span>
+                        );
+                      }
+                      return (
+                        <span class="text-oslo-green font-medium text-xs">
+                          {fmt.label}
+                          {fmt.relative && (
+                            <span class="block text-gray-400 font-normal text-[11px]">
+                              {fmt.relative}
+                            </span>
+                          )}
                         </span>
-                      )
-                      : <span class="text-gray-300">\u2013</span>}
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}
@@ -472,7 +493,6 @@ export default function ExploreView({ data }: Props) {
           </table>
         </div>
       </div>
-
     </div>
   );
 }

@@ -257,19 +257,34 @@ export default function KindergartenTable({ data }: Props) {
                   {k.opening_hours_to ?? "\u2013"}
                 </td>
                 <td class="px-3 py-2 whitespace-nowrap">
-                  {k.next_open_day
-                    ? (
+                  {(() => {
+                    const fmt = formatNextOpenDay(k.next_open_day);
+                    if (!fmt) {
+                      return <span class="text-gray-300">&ndash;</span>;
+                    }
+                    if (fmt.isPast) {
+                      return (
+                        <span class="text-gray-400 text-xs">
+                          <span class="line-through">{fmt.label}</span>
+                          {fmt.relative && (
+                            <span class="block text-gray-300 text-[11px]">
+                              {fmt.relative}
+                            </span>
+                          )}
+                        </span>
+                      );
+                    }
+                    return (
                       <span class="text-oslo-green font-medium text-xs">
-                        {formatNextOpenDay(k.next_open_day)}
+                        {fmt.label}
+                        {fmt.relative && (
+                          <span class="block text-gray-400 font-normal text-[11px]">
+                            {fmt.relative}
+                          </span>
+                        )}
                       </span>
-                    )
-                    : k.open_days.length === 0
-                    ? <span class="text-gray-300">\u2013</span>
-                    : (
-                      <span class="text-gray-400 text-xs italic">
-                        Ingen flere
-                      </span>
-                    )}
+                    );
+                  })()}
                 </td>
               </tr>
             ))}

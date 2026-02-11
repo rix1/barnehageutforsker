@@ -56,11 +56,17 @@ export function getAllKindergartens(): Kindergarten[] {
 
   return (kindergartensData as any[]).map((k) => {
     const days = byKindergarten.get(k.id) || [];
-    const upcoming = days.filter((d) => d.date >= today);
+    const sorted = days.sort((a, b) => a.date.localeCompare(b.date));
+    const upcoming = sorted.filter((d) => d.date >= today);
+    const past = sorted.filter((d) => d.date < today);
     return {
       ...k,
-      open_days: upcoming,
-      next_open_day: upcoming.length > 0 ? upcoming[0] : null,
+      open_days: sorted,
+      next_open_day: upcoming.length > 0
+        ? upcoming[0]
+        : past.length > 0
+        ? past[past.length - 1]
+        : null,
     };
   });
 }
