@@ -3,6 +3,8 @@
 Browse and compare kindergartens in Oslo. Data scraped from
 [oslo.kommune.no](https://www.oslo.kommune.no/barnehage/finn-barnehage-i-oslo/).
 
+![Screenshot of Barnehager i Oslo](assets/demo.jpg)
+
 ## Features
 
 - **Explore view** — split-screen with sortable table (left) and interactive map

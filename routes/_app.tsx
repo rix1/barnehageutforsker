@@ -22,7 +22,18 @@ export default define.page(function App({ Component, url }) {
                   Barnehager i Oslo
                 </span>
               </a>
-              <NavLinks currentPath={url.pathname} />
+              <div class="flex items-center gap-2">
+                <NavLinks currentPath={url.pathname} />
+                <a
+                  href="https://github.com/rix1/barnehageutforsker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-white/80 hover:text-white hover:bg-white/10 px-3 py-1.5 rounded text-sm font-medium transition-colors"
+                  aria-label="GitHub repository"
+                >
+                  GitHub
+                </a>
+              </div>
             </div>
           </div>
         </nav>
